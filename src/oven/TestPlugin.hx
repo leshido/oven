@@ -19,13 +19,13 @@ class TestPlugin implements IPlugin {
 
 		var files = Oven.getFiles();
 
-		for (file in files.keys()) {
+		for (file in files.files()) {
 
 			if (file.indexOf("i") != -1) {
 				files[file].title = "Derp";
 			}
-			files.set(file+"derp", files[file]);
-			files.remove(file);
+			
+			files.renameFile(file, files[file].title);
 		}
 	}
 }

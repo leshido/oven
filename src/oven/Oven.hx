@@ -14,20 +14,19 @@ import sys.io.File;
 class Oven
 {
 	
-	static private var _files:Map<String, FileData>;
+	static private var _files:FilesHolder;
 	
 	static function main() 
 	{
-		_files = new Map<String, FileData>();
+		_files = new FilesHolder();
 		
 		Sys.setCwd("test");
 		Sys.setCwd("project");
-		storeFiles("./"); // Does this work on PC?
+		storeFiles("./");
 		Sys.setCwd("../");
 		// Call Plugins
 		callPlugin();
 		saveFiles();
-		//trace(_files);
 	}
 	
 	private static function parseJson()
@@ -39,7 +38,7 @@ class Oven
 	{
 		// TODO: clear export directory
 		FileSystem.createDirectory("export");
-		for (fileName in _files.keys())
+		for (fileName in _files.files())
 		{
 			var f:String = Path.join(["export", fileName]);
 			
@@ -105,7 +104,7 @@ class Oven
 		// set data
 	}
 	
-	public static function getFiles():Map<String, FileData>
+	public static function getFiles():FilesHolder
 	{
 		return _files;
 	}
