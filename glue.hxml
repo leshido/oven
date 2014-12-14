@@ -1,0 +1,4 @@
+-cp src
+-main glue.Glue
+-resource glue.json@config
+-neko glue.n
