@@ -1,4 +1,4 @@
-package glue;
+package oven;
 
 import haxe.io.Path;
 import haxe.Json;
@@ -11,7 +11,7 @@ import sys.io.File;
  * ...
  * @author leshido
  */
-class Glue
+class Oven
 {
 	
 	static private var _files:Map<String, FileData>;

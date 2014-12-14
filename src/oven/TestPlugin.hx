@@ -1,4 +1,4 @@
-package glue;
+package oven;
 
 /**
  * ...
@@ -15,7 +15,7 @@ class TestPlugin
 	
 	public function run()
 	{
-		var files = Glue.getFiles();
+		var files = Oven.getFiles();
 		for (file in files.keys())
 		{
 			if (file.indexOf("i") != -1)

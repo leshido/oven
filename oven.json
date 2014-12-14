@@ -1,5 +1,5 @@
 {
 	"plugins" : [
-		"glue.TestPlugin"
+		"oven.TestPlugin"
 	]
 }

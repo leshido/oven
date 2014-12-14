@@ -18,16 +18,16 @@ class Main
 		{
 			// Compile
 		}
-		// Run glue.n
+		// Run oven.n
 	}
 	
 	static private function isCompilePending():Bool
 	{
-		if (!FileSystem.exists("glue.n"))
+		if (!FileSystem.exists("oven.n"))
 		{
 			return true;
 		}
-		// Compare mtime of json file and glue.n
+		// Compare mtime of json file and oven.n
 		return true;
 	}
 	
