@@ -1,0 +1,8 @@
+DS_Store
+.DS_Store
+*.iws
+*.ipr
+*.iml
+*.hxproj
+test/export
+bin
