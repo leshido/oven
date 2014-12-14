@@ -41,13 +41,13 @@ class Oven
 		FileSystem.createDirectory("export");
 		for (fileName in _files.keys())
 		{
-			var f = Path.join(["export", fileName]);
+			var f:String = Path.join(["export", fileName]);
 			
 			// Create missing directories
-			var pathArr = Path.directory(f).split("/");
+			var pathArr:Array<String> = Path.directory(f).split("/");
 			for (i in 0...pathArr.length)
 			{
-				var path = Path.join(pathArr.slice(0, i + 1));
+				var path:String = Path.join(pathArr.slice(0, i + 1));
 				if (!FileSystem.exists(path))
 				{
 					FileSystem.createDirectory(path);
@@ -60,7 +60,7 @@ class Oven
 	
 	private static function storeFiles(dir:String)
 	{
-		var files = FileSystem.readDirectory(dir);
+		var files:Array<String> = FileSystem.readDirectory(dir);
 		for (file in files)
 		{
 			file = Path.join([dir, file]);
@@ -70,7 +70,7 @@ class Oven
 				continue;
 			}
 			
-			var fd = new FileData();
+			var fd:FileData = new FileData();
 			fd.content = File.getContent(file);
 			_files.set(file, fd);
 		}
@@ -80,14 +80,17 @@ class Oven
 	{
 		__includePlugins();
 		
-		var json = Json.parse(haxe.Resource.getString("config"));
+		var json:Dynamic = Json.parse(haxe.Resource.getString("config"));
 		var plugins:Array<Dynamic> = cast json.plugins;
 		for (pluginPath in plugins)
 		{
 			Sys.println("Starting plugin: " + pluginPath);
-			var pluginClass = Type.resolveClass(pluginPath);
-			var plugin = Type.createInstance(pluginClass, []);
-			plugin.run();
+			var pluginClass:Dynamic = Type.resolveClass(pluginPath);
+			var plugin:IPlugin = Type.createEmptyInstance(pluginClass);
+			plugin.init(null); // TODO: pass data
+			if (plugin.runnable()) {
+				plugin.run();
+			}
 		}
 	}
 	
@@ -110,7 +113,7 @@ class Oven
 	
 	macro static function __includePlugins()
 	{
-		var json = Json.parse(haxe.Resource.getString("config"));
+		var json:Dynamic = Json.parse(haxe.Resource.getString("config"));
 		var exprArr:Array<Expr> = [];
 		var plugins:Array<Dynamic> = cast json.plugins;
 		for (plugin in plugins)
