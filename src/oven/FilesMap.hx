@@ -6,7 +6,7 @@ import haxe.io.Path;
  * @author leshido
  */
 @:forward(set, get, remove, exists, iterator)
-abstract FilesHolder(Map<String,FileData>)
+abstract FilesMap(Map<String,FileData>)
 {
 
 	inline public function new() {
@@ -18,7 +18,7 @@ abstract FilesHolder(Map<String,FileData>)
 		var file = this.get(path);
 		if (file == null) return;
 		if (newExt == null) newExt = Path.extension(path);
-		var newPath = Path.join( [Path.directory(path), newName + "." + newExt] );
+		var newPath = Path.join( [Path.directory(path), Path.withExtension(newName, newExt)] );
 		this.set(newPath, file);
 		this.remove(path);
 	}
@@ -36,7 +36,7 @@ abstract FilesHolder(Map<String,FileData>)
 	{
 		var file = this.get(path);
 		if (file == null) return;
-		var newPath = Path.normalize(Path.withoutExtension(path) + "." + newExt);
+		var newPath = Path.withExtension(Path.withoutExtension(path), newExt);
 		this.set(newPath, file);
 		this.remove(path);
 	}
@@ -66,6 +66,40 @@ abstract FilesHolder(Map<String,FileData>)
 		
 		return ret;
 	}
+
+	public function getAllByFiletype(exts:Array<String>):Array<String>
+	{
+		var ret:Array<String> = [];
+		for (path in this.keys())
+		{
+			var ext:String = Path.extension(path);
+			if (exts.indexOf(ext) != -1)
+			{
+				ret.push(path);
+			}
+		}
+		return ret;
+	}
+
+	public function getPath(fd:FileData):String
+	{
+		for (path in this.keys())
+		{
+			var file = this.get(path);
+			if (file == fd)
+			{
+				return path;
+			}
+		}
+		return null;
+	}
+
+	public function getFileName(path:String):String
+	{
+		path = Path.withoutDirectory(path);
+		path = Path.withoutExtension(path);
+		return path;
+	}
 	
 	public function files()
 	{
@@ -78,7 +112,9 @@ abstract FilesHolder(Map<String,FileData>)
 		return this.get(key);
 	}
 	
-	@:arrayAccess @:noCompletion public inline function arrayWrite(k:String, v:FileData):FileData
+	@:arrayAccess
+	@:noCompletion
+	public inline function arrayWrite(k:String, v:FileData):FileData
 	{
 		this.set(k, v);
 		return v;

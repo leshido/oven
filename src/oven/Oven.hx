@@ -14,11 +14,11 @@ import sys.io.File;
 class Oven
 {
 	
-	static private var _files:FilesHolder;
+	static private var _files:FilesMap;
 	
 	static function main() 
 	{
-		_files = new FilesHolder();
+		_files = new FilesMap();
 		
 		Sys.setCwd("test");
 		Sys.setCwd("project");
@@ -104,7 +104,7 @@ class Oven
 		// set data
 	}
 	
-	public static function getFiles():FilesHolder
+	public static function getFiles():FilesMap
 	{
 		return _files;
 	}
