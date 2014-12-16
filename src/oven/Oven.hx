@@ -31,26 +31,47 @@ class Oven
 	{
 		// Initialize
 		_files = new FilesMap();
-		_globalConfig = {}; // TODO: load from config json
+		var json:Dynamic = Json.parse(haxe.Resource.getString("config"));
+		_globalConfig = cast json.config;
 	}
 
 	private function bake()
 	{
+		var startingDir:String = Sys.getCwd();
+
 		// Load sources
-		Sys.setCwd("test");
-		Sys.setCwd("project");
+		var pathToSources:Array<String> = _globalConfig.sourcesDir.split("/");
+		for (dir in pathToSources)
+		{
+			Sys.setCwd(dir);
+		}
 		loadSources("./");
+		Sys.setCwd(startingDir);
 
 		// Run plugins, bake them goods
-		Sys.setCwd("../");
 		runPlugins();
 
+		// Go to export dir, delete and recreate if exists
+		var pathToExport:Array<String> = _globalConfig.exportDir.split("/");
+		var exportFolder:String = pathToExport.pop();
+		for (dir in pathToExport)
+		{
+			Sys.setCwd(dir);
+		}
+		if (FileSystem.exists(exportFolder))
+		{
+			try {
+				FileSystem.deleteDirectory(exportFolder);
+			} catch (err:Dynamic) {
+				Sys.println("-- Couldn't delete existing export folder " + _globalConfig.exportDir);
+			}
+		}
+		FileSystem.createDirectory(exportFolder);
+
 		// Save baked files to 'export' folder
-		// TODO: clear export directory
-		FileSystem.createDirectory("export");
 		for (fileName in _files.files())
 		{
-			var f:String = Path.join(["export", fileName]);
+			var f:String = Path.join([exportFolder, fileName]);
 
 			// Create missing directories
 			var pathArr:Array<String> = Path.directory(f).split("/");
@@ -109,7 +130,7 @@ class Oven
 		var plugins:Array<Dynamic> = cast json.plugins;
 		for (plugin in plugins)
 		{
-			Sys.println("Starting plugin: " + plugin.name);
+			Sys.println("Running plugin: " + plugin.name);
 
 			var pluginConfig:Dynamic = mergeData(_inst._globalConfig, plugin);
 			var pluginClass:Dynamic = Type.resolveClass(plugin.name);
