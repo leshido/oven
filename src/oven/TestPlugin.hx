@@ -11,10 +11,6 @@ class TestPlugin implements IPlugin {
 		//
 	}
 
-	public function runnable():Bool {
-		return true;
-	}
-	
 	public function run():Void {
 
 		var files = Oven.getFiles();
@@ -24,7 +20,7 @@ class TestPlugin implements IPlugin {
 			if (file.indexOf("i") != -1) {
 				files[file].title = "Derp";
 			}
-			
+			//Sys.println('rename $file to ${files[file].title}');
 			files.renameFile(file, files[file].title);
 		}
 	}

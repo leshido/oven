@@ -12,17 +12,17 @@ abstract FilesMap(Map<String,FileData>)
 	inline public function new() {
 		this = new Map<String, FileData>();
 	}
-	
+
 	public function renameFile(path:String, newName:String, ?newExt:String)
 	{
 		var file = this.get(path);
-		if (file == null) return;
+		if (file == null || newName == null) return;
 		if (newExt == null) newExt = Path.extension(path);
 		var newPath = Path.join( [Path.directory(path), Path.withExtension(newName, newExt)] );
 		this.set(newPath, file);
 		this.remove(path);
 	}
-	
+
 	public function moveDir(path:String, newPath:String)
 	{
 		var file = this.get(path);
@@ -31,7 +31,7 @@ abstract FilesMap(Map<String,FileData>)
 		this.set(newPath, file);
 		this.remove(path);
 	}
-	
+
 	public function changeExt(path:String, newExt:String)
 	{
 		var file = this.get(path);
@@ -40,7 +40,7 @@ abstract FilesMap(Map<String,FileData>)
 		this.set(newPath, file);
 		this.remove(path);
 	}
-	
+
 	public function listDir(dirPath:String, ?includeSubDirs:Bool = false):Array<String>
 	{
 		var ret:Array<String> = [];
@@ -55,7 +55,7 @@ abstract FilesMap(Map<String,FileData>)
 		{
 			testEquals = function(path1:String, path2:String) { return Path.directory(path1) ==  path2; };
 		}
-		
+
 		for (path in this.keys())
 		{
 			if (testEquals(path, dirPath))
@@ -63,7 +63,7 @@ abstract FilesMap(Map<String,FileData>)
 				ret.push(path);
 			}
 		}
-		
+
 		return ret;
 	}
 
@@ -100,18 +100,18 @@ abstract FilesMap(Map<String,FileData>)
 		path = Path.withoutExtension(path);
 		return path;
 	}
-	
+
 	public function files()
 	{
 		return this.keys();
 	}
-	
+
 	@:arrayAccess
 	public inline function get(key:String)
 	{
 		return this.get(key);
 	}
-	
+
 	@:arrayAccess
 	@:noCompletion
 	public inline function arrayWrite(k:String, v:FileData):FileData
@@ -119,6 +119,6 @@ abstract FilesMap(Map<String,FileData>)
 		this.set(k, v);
 		return v;
 	}
-	
-	
+
+
 }

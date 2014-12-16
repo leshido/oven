@@ -1,5 +1,12 @@
 {
+	"config" :	{
+
+		"sourcesDir" : "test/project",
+		"exportDir" : "test/export",
+
+		"siteTitle" : "Oven Baked Site"
+	},
 	"plugins" : [
-		"oven.TestPlugin"
+		{"name" : "oven.TestPlugin"}
 	]
 }
