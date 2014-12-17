@@ -65,11 +65,11 @@ class Oven
 		FileSystem.createDirectory(exportFolder);
 
 		// Save baked files to 'export' folder
-		saveFiles(exportFolder);
+		exportFiles(exportFolder);
 		
 	}
 
-	private function saveFiles(exportFolder:String):Void
+	private function exportFiles(exportFolder:String):Void
 	{
 		for (fileName in _files.files())
 		{

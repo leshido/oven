@@ -1,9 +1,12 @@
-package oven;
+package ;
 
 /**
 * ...
 * @author nndovo
 */
+
+import oven.IPlugin;
+import oven.Oven;
 
 class TestPluginB implements IPlugin {
 
