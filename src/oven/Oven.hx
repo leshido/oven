@@ -27,7 +27,7 @@ class Oven
 		_inst.bake();
 	}
 
-	function new()
+	private function new()
 	{
 		// Initialize
 		_files = new FilesMap();
@@ -60,15 +60,17 @@ class Oven
 		}
 		if (FileSystem.exists(exportFolder))
 		{
-			try {
-				FileSystem.deleteDirectory(exportFolder);
-			} catch (err:Dynamic) {
-				Sys.println("-- Couldn't delete existing export folder " + _globalConfig.exportDir);
-			}
+			recursiveDelete(exportFolder);
 		}
 		FileSystem.createDirectory(exportFolder);
 
 		// Save baked files to 'export' folder
+		saveFiles(exportFolder);
+		
+	}
+
+	private function saveFiles(exportFolder:String):Void
+	{
 		for (fileName in _files.files())
 		{
 			var f:String = Path.join([exportFolder, fileName]);
@@ -159,12 +161,7 @@ class Oven
 	{
 		baseData = (baseData == null ? {} : baseData);
 		extraData = (extraData == null ? {} : extraData);
-		var merged:Dynamic = {};
-		for (key in Reflect.fields(baseData))
-		{
-			var value:Dynamic = Reflect.field(baseData, key);
-			Reflect.setField(merged, Std.string(key), value);
-		}
+		var merged:Dynamic = Reflect.copy(baseData);
 		for (key in Reflect.fields(extraData))
 		{
 			if (overwrite || !Reflect.hasField(merged, key))
@@ -174,5 +171,39 @@ class Oven
 			}
 		}
 		return merged;
+	}
+
+	public static function recursiveDelete (path:String)
+	{
+		for (file in FileSystem.readDirectory(path))
+		{
+			var currPath = Path.join([path, file]);
+			if (FileSystem.isDirectory(currPath))
+			{
+				recursiveDelete(currPath);
+				if (FileSystem.readDirectory(currPath).length == 0)
+				{
+					try
+					{
+						FileSystem.deleteDirectory(currPath);
+					}
+					catch (err:Dynamic)
+					{
+						Sys.println("-- Problem deleting folder " + currPath);
+					}
+				}
+			}
+			else
+			{
+				try
+					{
+						FileSystem.deleteFile(currPath);
+					}
+					catch (err:Dynamic)
+					{
+						Sys.println("-- Problem deleting file " + currPath);
+					}
+			}
+		}
 	}
 }
