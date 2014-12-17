@@ -40,11 +40,7 @@ class Oven
 		var startingDir:String = Sys.getCwd();
 
 		// Load sources
-		var pathToSources:Array<String> = _globalConfig.sourcesDir.split("/");
-		for (dir in pathToSources)
-		{
-			Sys.setCwd(dir);
-		}
+		Sys.setCwd(_globalConfig.sourcesDir);
 		loadSources("./");
 		Sys.setCwd(startingDir);
 
@@ -54,10 +50,7 @@ class Oven
 		// Go to export dir, delete and recreate if exists
 		var pathToExport:Array<String> = _globalConfig.exportDir.split("/");
 		var exportFolder:String = pathToExport.pop();
-		for (dir in pathToExport)
-		{
-			Sys.setCwd(dir);
-		}
+		Sys.setCwd(Path.join(pathToExport));
 		if (FileSystem.exists(exportFolder))
 		{
 			recursiveDelete(exportFolder);
