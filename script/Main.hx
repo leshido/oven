@@ -15,10 +15,16 @@ class Main
 {
 	private static var _args:Array<String>;
 	private static var _config:Dynamic;
+	private static var _libPath:String;
+	private static var _projectPath:String;
 	
 	static function main() 
 	{
 		_args = Sys.args();
+		
+		_projectPath = _args.pop();
+		_libPath = Sys.getCwd();
+		Sys.setCwd(_projectPath);
 
 		var jsonPath = getJsonFile();
 		var json = File.getContent(jsonPath);
@@ -49,7 +55,7 @@ class Main
 		// Build
 		var compilerArgs:Array<String> = [];
 		var outputFile:String = Path.join([Path.directory(jsonPath), "oven.n"]);
-		compilerArgs = compilerArgs.concat(["-cp", "src"]); //TODO: change to use -lib when used as haxelib
+		compilerArgs = compilerArgs.concat(["-cp", Path.join([_libPath, "src"]) ]);
 		compilerArgs = compilerArgs.concat(["-main", "oven.Oven"]);
 		for (pluginDir in pluginDirs)
 		{

@@ -40,7 +40,7 @@ class Oven
 		var startingDir:String = Sys.getCwd();
 
 		// Load sources
-		Sys.setCwd(_globalConfig.sourcesDir);
+		Sys.setCwd(_globalConfig.sourcesDir); //TODO: assume folder "project" if nothing defined?
 		loadSources("./");
 		Sys.setCwd(startingDir);
 
@@ -48,9 +48,10 @@ class Oven
 		runPlugins();
 
 		// Go to export dir, delete and recreate if exists
-		var pathToExport:Array<String> = _globalConfig.exportDir.split("/");
-		var exportFolder:String = pathToExport.pop();
-		Sys.setCwd(Path.join(pathToExport));
+		var pathToExportArr:Array<String> = _globalConfig.exportDir.split("/"); //TODO: assume folder "export" if nothing defined?
+		var exportFolder:String = pathToExportArr.pop();
+		var pathToExport:String = pathToExportArr.length > 0 ? Path.join(pathToExportArr) : "./";
+		Sys.setCwd(pathToExport);
 		if (FileSystem.exists(exportFolder))
 		{
 			recursiveDelete(exportFolder);
