@@ -41,8 +41,6 @@ class YamlParser implements IPlugin {
 		var match:Bool = frontMatterSelector.match(c);
 		if (!match) return;
 
-		trace(fileName);
-
 		// Remove front matter from contents
 		fd.content = frontMatterSelector.replace(c, "");
 
@@ -60,7 +58,5 @@ class YamlParser implements IPlugin {
 			var kv:Array<String> = keyValSplitter.split(data.shift());
 			Reflect.setField(fd, kv[0], kv[1]);
 		}
-
-		trace(Reflect.fields(fd));
 	}
 }
