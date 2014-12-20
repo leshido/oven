@@ -24,14 +24,14 @@ class YamlParser implements IPlugin {
 
 
 	public function init(?data:Dynamic):Void {
-		frontMatterSelector = ~/---+[\r\n]+((\w+\s*:\s*.*[\r\n]+)*)---+[\n\r]*/m;
+		frontMatterSelector = ~/^---+[\n\r]?$[\r\n]+((\s*\w+\s*:\s*.*\s*[\r\n]+)*)^---+[\r\n]?$[\n\r]*/m;
 		keyValSplitter = ~/\s*:\s*/;
-		newLineCatcher = ~/[\r\n]+/g;
+		newLineCatcher = ~/\s*[\r\n]+\s*/g;
 
 		floatCheck = ~/^[0-9]+\.[0-9]+$/;
 		intCheck = ~/^[0-9]+$/;
-		trueVals = ["true", "yes", "on", "y"];
-		falseVals = ["false", "no", "off", "n"];
+		trueVals = ["true", "yes", "on"];
+		falseVals = ["false", "no", "off"];
 	}
 
 	public function run():Void {
