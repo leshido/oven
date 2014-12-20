@@ -17,10 +17,21 @@ class YamlParser implements IPlugin {
 	private var keyValSplitter:EReg;
 	private var newLineCatcher:EReg;
 
+	private var floatCheck:EReg;
+	private var intCheck:EReg;
+	private var trueVals:Array<String>;
+	private var falseVals:Array<String>;
+
+
 	public function init(?data:Dynamic):Void {
 		frontMatterSelector = ~/^---+$\n+((\w+\s*:\s*.*\n+)+)^---+$\n*/m;
 		keyValSplitter = ~/\s*:\s*/;
 		newLineCatcher = ~/\n+/g;
+
+		floatCheck = ~/^[0-9]+\.[0-9]+$/;
+		intCheck = ~/^[0-9]+$/;
+		trueVals = ["true", "yes", "on", "y"];
+		falseVals = ["false", "no", "off", "n"];
 	}
 
 	public function run():Void {
@@ -46,7 +57,6 @@ class YamlParser implements IPlugin {
 
 		// Get front matter data
 		var dataStr:String = frontMatterSelector.matched(1);
-		dataStr = newLineCatcher.replace(dataStr, "\n");
 		var data = newLineCatcher.split(dataStr);
 		// Remove trailing data entry
 		data.pop();
@@ -54,9 +64,36 @@ class YamlParser implements IPlugin {
 		// Add front matter data to file data
 		while (data.length > 0)
 		{
-			// TODO: Guess value type (Int, Float, String, Bool)
 			var kv:Array<String> = keyValSplitter.split(data.shift());
-			Reflect.setField(fd, kv[0], kv[1]);
+			// Assume type of value (Int, Float, Bool, String)
+			var val = autoParseType(kv[1]);
+			Reflect.setField(fd, kv[0], val);
 		}
+	}
+
+	private function autoParseType(str:String):Dynamic
+	{
+		if (intCheck.match(str))
+		{
+			return Std.parseInt(str);
+		}
+		else if (floatCheck.match(str))
+		{
+			return Std.parseFloat(str);
+		}
+		else
+		{
+			var lowerStr:String = str.toLowerCase();
+			if (trueVals.indexOf(lowerStr) != -1)
+			{
+				return true;
+			}
+			else if (falseVals.indexOf(lowerStr) != -1)
+			{
+				return false;
+			}
+		}
+
+		return str;
 	}
 }
