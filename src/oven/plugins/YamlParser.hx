@@ -24,9 +24,9 @@ class YamlParser implements IPlugin {
 
 
 	public function init(?data:Dynamic):Void {
-		frontMatterSelector = ~/^---+$\n+((\w+\s*:\s*.*\n+)+)^---+$\n*/m;
+		frontMatterSelector = ~/---+[\r\n]+((\w+\s*:\s*.*[\r\n]+)*)---+[\n\r]*/m;
 		keyValSplitter = ~/\s*:\s*/;
-		newLineCatcher = ~/\n+/g;
+		newLineCatcher = ~/[\r\n]+/g;
 
 		floatCheck = ~/^[0-9]+\.[0-9]+$/;
 		intCheck = ~/^[0-9]+$/;
