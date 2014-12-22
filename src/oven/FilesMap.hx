@@ -66,6 +66,16 @@ abstract FilesMap(Map<String,FileData>)
 
 		return ret;
 	}
+	
+	public function count():Int
+	{
+		var ret:Int = 0;
+		for (i in this.keys())
+		{
+			ret++;
+		}
+		return ret;
+	}
 
 	public function getAllByFiletype(exts:Array<String>):Array<String>
 	{

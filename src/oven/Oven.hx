@@ -70,7 +70,8 @@ class Oven
 		Sys.setCwd(sourcesDir);
 		loadSources("./");
 		Sys.setCwd(startingDir);
-
+		Sys.println('Starting oven with ${_files.count()} files:');
+		
 		// Run plugins, bake them goods
 		runPlugins();
 
@@ -151,18 +152,35 @@ class Oven
 
 		var json:Dynamic = Json.parse(haxe.Resource.getString("config"));
 		var plugins:Array<Dynamic> = cast json.plugins;
-		for (plugin in plugins)
+		var time:Float = Sys.time();
+		for (i in 0...plugins.length)
 		{
-			Sys.println("Running plugin: " + plugin.name);
+			var pluginData = plugins[i];
+			Sys.print('- Running plugin ${i + 1}/${plugins.length} : ${pluginData.name} [...]');
 
-			var pluginConfig:Dynamic = mergeData(_inst._globalConfig, plugin);
-			var pluginClass:Dynamic = Type.resolveClass(plugin.name);
+			var pluginConfig:Dynamic = mergeData(_inst._globalConfig, pluginData);
+			var pluginClass:Dynamic = Type.resolveClass(pluginData.name);
 			var plugin:IPlugin = Type.createEmptyInstance(pluginClass);
 
 			// TODO: combine init with run?
-			plugin.init(pluginConfig); // TODO: pass data
-			plugin.run();
+			try
+			{
+				plugin.init(pluginConfig); // TODO: pass data
+				plugin.run();
+			}
+			catch (e:Dynamic)
+			{
+				Sys.println('\r- Running plugin ${i + 1}/${plugins.length} : ${pluginData.name} [FAIL] ');
+				Sys.println("-------------------------------------------------------------");
+				Sys.println(e);
+				Sys.println("-------------------------------------------------------------");
+				Sys.exit(1);
+			}
+			
+			Sys.println('\r- Running plugin ${i + 1}/${plugins.length} : ${pluginData.name} [OK!]');
 		}
+		time = Math.floor((Sys.time() - time) * 100) / 100;
+		Sys.println('\nCOMPLETE! Baked in $time seconds.');
 	}
 
 	static public function globalConfig():Dynamic
