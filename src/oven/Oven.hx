@@ -40,7 +40,34 @@ class Oven
 		var startingDir:String = Sys.getCwd();
 
 		// Load sources
-		Sys.setCwd(_globalConfig.sourcesDir); //TODO: assume folder "project" if nothing defined?
+		var sourcesDir:String = "";
+		if (_globalConfig.sourcesDir == null)
+		{
+			var possibleDirs = ["project", "source"];
+			for (dir in possibleDirs)
+			{
+				if (FileSystem.exists(dir) && FileSystem.isDirectory(dir))
+				{
+					sourcesDir = dir;
+					break;
+				}
+			}
+			if (sourcesDir == "")
+			{
+				throw "No source directory found";
+				Sys.exit(1);
+			}
+		}
+		else
+		{
+			if (!FileSystem.exists(_globalConfig.sourcesDir) || !FileSystem.isDirectory(_globalConfig.sourcesDir))
+			{
+				throw "sourcesDir does not seem to point to an exisitng directory";
+				Sys.exit(1);
+			}
+			sourcesDir = _globalConfig.sourcesDir;
+		}
+		Sys.setCwd(sourcesDir);
 		loadSources("./");
 		Sys.setCwd(startingDir);
 
