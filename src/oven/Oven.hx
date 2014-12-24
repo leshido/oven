@@ -76,7 +76,8 @@ class Oven
 		runPlugins();
 
 		// Go to export dir, delete and recreate if exists
-		var pathToExportArr:Array<String> = _globalConfig.exportDir.split("/"); //TODO: assume folder "export" if nothing defined?
+		var exportDir = _globalConfig.exportDir == null ? "export" : _globalConfig.exportDir;
+		var pathToExportArr:Array<String> = exportDir.split("/");
 		var exportFolder:String = pathToExportArr.pop();
 		var pathToExport:String = pathToExportArr.length > 0 ? Path.join(pathToExportArr) : "./";
 		Sys.setCwd(pathToExport);

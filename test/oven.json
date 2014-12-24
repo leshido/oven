@@ -1,0 +1,9 @@
+{
+	"config" :	{
+
+		"siteTitle" : "Oven Baked Site"
+	},
+	"plugins" : [
+		{"name" : "oven.TestPlugin"}
+	]
+}
