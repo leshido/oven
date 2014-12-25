@@ -26,6 +26,77 @@ class Main
 		_libPath = Sys.getCwd();
 		Sys.setCwd(_projectPath);
 
+		var command = _args.shift();
+		if (command == "bake")
+		{
+			// Bake project
+			bake();
+		}
+		else if (command == "create")
+		{
+			// Create template
+			create();
+		}
+		else if (command == "setup")
+		{
+			// TODO: Install oven alias
+		}
+		else if (command == "help" || command == null)
+		{
+			// TODO: Display help
+		}
+		else
+		{
+			Sys.println('Command "$command" not found. Use "oven help" for a list of available commands.');
+			Sys.exit(1);
+		}
+	}
+	
+	static function create()
+	{
+		if (_args[0] == "-list")
+		{
+			var templates = FileSystem.readDirectory(Path.join([_libPath, "templates"]));
+			for (template in templates)
+			{
+				Sys.println(template);
+			}
+			return;
+		}
+		var templateName = _args.length > 0 ? _args.shift() : "default";
+		var templatePath = Path.join([_libPath, "templates", templateName]);
+		if (FileSystem.exists(templatePath))
+		{
+			copyDir(templatePath);
+		}
+		else
+		{
+			Sys.println('Template "$templateName" not found. Use "oven create -list" for a list of available templates.');
+			Sys.exit(1);
+		}
+	}
+	
+	static function copyDir(templatePath:String, filePath:String = "")
+	{
+		var files = FileSystem.readDirectory(Path.join([templatePath, filePath]));
+		for (fileName in files)
+		{
+			fileName = Path.join([filePath, fileName]);
+			var origFile = Path.join([templatePath, fileName]);
+			if (FileSystem.isDirectory(origFile))
+			{
+				FileSystem.createDirectory(fileName);
+				copyDir(templatePath, fileName);
+			}
+			else
+			{
+				File.copy(origFile, fileName);
+			}
+		}
+	}
+	
+	static function bake()
+	{
 		var jsonPath = getJsonFile();
 		var json = File.getContent(jsonPath);
 		_config = Json.parse(json);
@@ -92,7 +163,8 @@ class Main
 		
 		if (fileToLoad == "")
 		{
-			throw "Could not find any JSON recipe file.";
+			Sys.println("Could not find any JSON recipe file.");
+			Sys.exit(1);
 		}
 		return fileToLoad;
 	}
