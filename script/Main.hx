@@ -129,8 +129,14 @@ class Main
 	
 	static private function bake()
 	{
-		var jsonPath = getJsonFile();
-		var json = File.getContent(jsonPath);
+		var jsonPath:String = getJsonFile();
+		var json:String;
+		try {
+			json = File.getContent(jsonPath);
+		} catch (e:Dynamic) {
+			Sys.println("Error: unable to opne file " + jsonPath);
+			return;
+		}
 		_config = Json.parse(json);
 		
 		// Find plugin locations to add as -cp
