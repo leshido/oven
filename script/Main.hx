@@ -54,8 +54,9 @@ class Main
 	
 	static function create()
 	{
-		if (_args[0] == "-list")
+		if (_args.length == 0)
 		{
+			Sys.println('List of available templates:');
 			var templates = FileSystem.readDirectory(Path.join([_libPath, "templates"]));
 			for (template in templates)
 			{
@@ -63,15 +64,27 @@ class Main
 			}
 			return;
 		}
-		var templateName = _args.length > 0 ? _args.shift() : "default";
+		var templateName = _args.shift();
 		var templatePath = Path.join([_libPath, "templates", templateName]);
+
+		var currDir = Sys.getCwd();
+		var targetDir = _args.length > 0 ? _args.shift() : currDir;
+		if (!FileSystem.exists(targetDir))
+		{
+			FileSystem.createDirectory(targetDir);
+		}
+		Sys.setCwd(targetDir);
+
 		if (FileSystem.exists(templatePath))
 		{
 			copyDir(templatePath);
+			Sys.println('DONE! all files of template "$templateName" were created.');
+			Sys.setCwd(currDir);
 		}
 		else
 		{
-			Sys.println('Template "$templateName" not found. Use "oven create -list" for a list of available templates.');
+			Sys.setCwd(currDir);
+			Sys.println('Template "$templateName" not found. Use "oven create" for a list of available templates.');
 			Sys.exit(1);
 		}
 	}
