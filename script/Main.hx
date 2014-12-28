@@ -13,12 +13,14 @@ import sys.io.File;
 
 class Main 
 {
+	static public inline var VERSION:String = "0.1.0";
+
 	private static var _args:Array<String>;
 	private static var _config:Dynamic;
 	private static var _libPath:String;
 	private static var _projectPath:String;
 	
-	static function main() 
+	static function main()
 	{
 		_args = Sys.args();
 		
@@ -39,11 +41,24 @@ class Main
 		}
 		else if (command == "setup")
 		{
-			// TODO: Install oven alias
+			// Setup oven alias
+			setup();
 		}
-		else if (command == "help" || command == null)
+		else if (command == "help")
 		{
-			// TODO: Display help
+			// TODO: update help when commands are set better...
+			Sys.println("Oven (v. " + VERSION + ")");
+			Sys.println("A simple & extendable static site generator");
+			Sys.println("---");
+			Sys.println("Usage: oven create|bake|help");
+			Sys.println("");
+		}
+		else if (command == null)
+		{
+			Sys.println("Oven (v. " + VERSION + ")");
+			Sys.println("A simple & extendable static site generator");
+			Sys.println("---");
+			Sys.println("Use 'oven help' to list all commands");
 		}
 		else
 		{
@@ -51,8 +66,25 @@ class Main
 			Sys.exit(1);
 		}
 	}
+
+	static private function setup():Void {
+		var toPath:String = "/usr/bin/oven";
+		if (!FileSystem.exists(toPath)) {
+			try {
+				var fout = File.write( toPath, false );
+				fout.writeString('#!/bin/sh\n');
+				fout.writeString('haxelib run oven "$@"');
+				fout.close();
+				Sys.command("chmod +x " + toPath);
+			}
+			catch (e:Dynamic) {
+				Sys.println("Error: Restricted access - Run this command with 'sudo'");
+			}
+
+		}
+	}
 	
-	static function create()
+	static private function create()
 	{
 		if (_args.length == 0)
 		{
@@ -89,7 +121,7 @@ class Main
 		}
 	}
 	
-	static function copyDir(templatePath:String, filePath:String = "")
+	static private function copyDir(templatePath:String, filePath:String = "")
 	{
 		var files = FileSystem.readDirectory(Path.join([templatePath, filePath]));
 		for (fileName in files)
@@ -108,10 +140,16 @@ class Main
 		}
 	}
 	
-	static function bake()
+	static private function bake()
 	{
-		var jsonPath = getJsonFile();
-		var json = File.getContent(jsonPath);
+		var jsonPath:String = getJsonFile();
+		var json:String;
+		try {
+			json = File.getContent(jsonPath);
+		} catch (e:Dynamic) {
+			Sys.println("Error: unable to opne file " + jsonPath);
+			return;
+		}
 		_config = Json.parse(json);
 		
 		// Find plugin locations to add as -cp
@@ -153,7 +191,7 @@ class Main
 		if (buildStatus == 0) Sys.command("neko " + outputFile);
 	}
 	
-	static function getJsonFile():String
+	static private function getJsonFile():String
 	{
 		// Try to load Json file in order
 		var fileToLoad:String = "";
