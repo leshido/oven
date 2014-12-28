@@ -42,7 +42,19 @@ class Main
 		else if (command == "setup")
 		{
 			// Setup oven alias
-			setup();
+			try
+			{
+				setup();
+			}
+			catch (e:Dynamic)
+			{
+				Sys.println("ERROR!");
+				Sys.println("---");
+				Sys.println(e);
+				Sys.exit(1);
+			}
+			Sys.println("DONE! you can now use 'oven' command");
+			Sys.exit(0);
 		}
 		else if (command == "help")
 		{
@@ -68,19 +80,32 @@ class Main
 	}
 
 	static private function setup():Void {
-		var toPath:String = "/usr/bin/oven";
-		if (!FileSystem.exists(toPath)) {
-			try {
-				var fout = File.write( toPath, false );
-				fout.writeString('#!/bin/sh\n');
-				fout.writeString('haxelib run oven "$@"');
-				fout.close();
-				Sys.command("chmod +x " + toPath);
+		var sysName = Sys.systemName();
+		if (sysName == "Windows")
+		{
+			var content = "@haxelib run oven %*";
+			var path = Sys.getEnv("HAXEPATH");
+			if (path == null || path.length == 0) {
+				throw "HAXEPATH is not part of the environment variables.";
+				return;
 			}
-			catch (e:Dynamic) {
-				Sys.println("Error: Restricted access - Run this command with 'sudo'");
+			sys.io.File.saveContent( '$path/oven.bat', content );
+		}
+		else
+		{
+			var content = "#!/bin/sh\n\nhaxelib run oven $@";
+			var path = "/usr/bin/oven";
+			try
+			{
+				sys.io.File.saveContent(path , content );
+				Sys.command( "chmod", ["+x", path]);
 			}
-
+			catch (e:Dynamic)
+			{
+				throw "Failed to save to '" + path + "'. Try to run this command with 'sudo'.";
+				return;
+			}
+			
 		}
 	}
 	
