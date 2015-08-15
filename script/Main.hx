@@ -59,17 +59,13 @@ class Main
 		else if (command == "help")
 		{
 			// TODO: update help when commands are set better...
-			Sys.println("Oven (v. " + VERSION + ")");
-			Sys.println("A simple & extendable static site generator");
-			Sys.println("---");
+			printHello();
 			Sys.println("Usage: oven create|bake|help");
 			Sys.println("");
 		}
 		else if (command == null)
 		{
-			Sys.println("Oven (v. " + VERSION + ")");
-			Sys.println("A simple & extendable static site generator");
-			Sys.println("---");
+			printHello();
 			Sys.println("Use 'oven help' to list all commands");
 		}
 		else
@@ -77,6 +73,13 @@ class Main
 			Sys.println('Command "$command" not found. Use "oven help" for a list of available commands.');
 			Sys.exit(1);
 		}
+	}
+	
+	static private function printHello() : Void
+	{
+		Sys.println("Oven (v. " + VERSION + ")");
+		Sys.println("A simple & extendable static site generator");
+		Sys.println("---");
 	}
 
 	static private function setup():Void {

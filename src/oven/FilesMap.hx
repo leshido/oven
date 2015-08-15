@@ -110,7 +110,8 @@ abstract FilesMap(Map<String,FileData>)
 		path = Path.withoutExtension(path);
 		return path;
 	}
-
+	
+	// TODO: change files() to paths()
 	public function files()
 	{
 		return this.keys();

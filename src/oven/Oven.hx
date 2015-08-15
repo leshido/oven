@@ -197,7 +197,7 @@ class Oven
 
 	// TODO: change to make sure child-fo-child isn't copied by reference,
 	// maybe using recursion for children?
-	static public function mergeData(baseData:Dynamic, extraData:Dynamic, overwrite:Bool = true):Dynamic
+	private function mergeData(baseData:Dynamic, extraData:Dynamic, overwrite:Bool = true):Dynamic
 	{
 		baseData = (baseData == null ? {} : baseData);
 		extraData = (extraData == null ? {} : extraData);
@@ -213,7 +213,7 @@ class Oven
 		return merged;
 	}
 
-	public static function recursiveDelete (path:String)
+	private function recursiveDelete (path:String)
 	{
 		for (file in FileSystem.readDirectory(path))
 		{
