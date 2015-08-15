@@ -1,0 +1,12 @@
+{
+  "name": "oven",
+  "url" : "https://github.com/leshido/oven",
+  "license": "MIT",
+  "tags": [],
+  "description": "Plugin-powered file manipulator",
+  "version": "0.0.1",
+  "releasenote": "Work in progress, everything may be changed",
+  "contributors": ["leshido", "nndovo"],
+  "dependencies": {
+  }
+}

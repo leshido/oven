@@ -40,15 +40,44 @@ class Oven
 		var startingDir:String = Sys.getCwd();
 
 		// Load sources
-		Sys.setCwd(_globalConfig.sourcesDir); //TODO: assume folder "project" if nothing defined?
+		var sourcesDir:String = "";
+		if (_globalConfig.sourcesDir == null)
+		{
+			var possibleDirs = ["project", "source"];
+			for (dir in possibleDirs)
+			{
+				if (FileSystem.exists(dir) && FileSystem.isDirectory(dir))
+				{
+					sourcesDir = dir;
+					break;
+				}
+			}
+			if (sourcesDir == "")
+			{
+				throw "No source directory found";
+				Sys.exit(1);
+			}
+		}
+		else
+		{
+			if (!FileSystem.exists(_globalConfig.sourcesDir) || !FileSystem.isDirectory(_globalConfig.sourcesDir))
+			{
+				throw "sourcesDir does not seem to point to an exisitng directory";
+				Sys.exit(1);
+			}
+			sourcesDir = _globalConfig.sourcesDir;
+		}
+		Sys.setCwd(sourcesDir);
 		loadSources("./");
 		Sys.setCwd(startingDir);
-
+		Sys.println('Starting oven with ${_files.count()} files:');
+		
 		// Run plugins, bake them goods
 		runPlugins();
 
 		// Go to export dir, delete and recreate if exists
-		var pathToExportArr:Array<String> = _globalConfig.exportDir.split("/"); //TODO: assume folder "export" if nothing defined?
+		var exportDir = _globalConfig.exportDir == null ? "export" : _globalConfig.exportDir;
+		var pathToExportArr:Array<String> = exportDir.split("/");
 		var exportFolder:String = pathToExportArr.pop();
 		var pathToExport:String = pathToExportArr.length > 0 ? Path.join(pathToExportArr) : "./";
 		Sys.setCwd(pathToExport);
@@ -124,18 +153,35 @@ class Oven
 
 		var json:Dynamic = Json.parse(haxe.Resource.getString("config"));
 		var plugins:Array<Dynamic> = cast json.plugins;
-		for (plugin in plugins)
+		var time:Float = Sys.time();
+		for (i in 0...plugins.length)
 		{
-			Sys.println("Running plugin: " + plugin.name);
+			var pluginData = plugins[i];
+			Sys.print('- Running plugin ${i + 1}/${plugins.length} : ${pluginData.name} [...]');
 
-			var pluginConfig:Dynamic = mergeData(_inst._globalConfig, plugin);
-			var pluginClass:Dynamic = Type.resolveClass(plugin.name);
+			var pluginConfig:Dynamic = mergeData(_inst._globalConfig, pluginData);
+			var pluginClass:Dynamic = Type.resolveClass(pluginData.name);
 			var plugin:IPlugin = Type.createEmptyInstance(pluginClass);
 
 			// TODO: combine init with run?
-			plugin.init(pluginConfig); // TODO: pass data
-			plugin.run();
+			try
+			{
+				plugin.init(pluginConfig); // TODO: pass data
+				plugin.run();
+			}
+			catch (e:Dynamic)
+			{
+				Sys.println('\r- Running plugin ${i + 1}/${plugins.length} : ${pluginData.name} [FAIL] ');
+				Sys.println("-------------------------------------------------------------");
+				Sys.println(e);
+				Sys.println("-------------------------------------------------------------");
+				Sys.exit(1);
+			}
+			
+			Sys.println('\r- Running plugin ${i + 1}/${plugins.length} : ${pluginData.name} [OK!]');
 		}
+		time = Math.floor((Sys.time() - time) * 100) / 100;
+		Sys.println('\nCOMPLETE! Baked in $time seconds.');
 	}
 
 	static public function globalConfig():Dynamic
