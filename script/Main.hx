@@ -13,8 +13,6 @@ import sys.io.File;
 
 class Main 
 {
-	static public inline var VERSION:String = "0.1.0";
-
 	private static var _args:Array<String>;
 	private static var _config:Dynamic;
 	private static var _libPath:String;
@@ -77,8 +75,9 @@ class Main
 	
 	static private function printHello() : Void
 	{
-		Sys.println("Oven (v. " + VERSION + ")");
-		Sys.println("A simple & extendable static site generator");
+		var info = Json.parse(File.getContent(Path.join([_libPath, "haxelib.json"])));
+		Sys.println("Oven (version " + info.version + ")");
+		Sys.println(info.description);
 		Sys.println("---");
 	}
 
