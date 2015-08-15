@@ -213,7 +213,7 @@ class Main
 		var buildStatus = Sys.command("haxe", compilerArgs);
 		
 		// Run
-		if (buildStatus == 0) Sys.command("neko " + outputFile);
+		if (buildStatus == 0) Sys.command("neko", [outputFile]);
 	}
 	
 	static private function getJsonFile():String
