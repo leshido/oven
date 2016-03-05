@@ -20,12 +20,10 @@ class IgnoreFiles implements IPlugin {
 
 	public function run():Void {
 
-		for (file in _files.files())
+		for (f in _files.files())
         {
-            if (_files[file].ignore != null && _files[file].ignore == true)
-            {
-                _files.remove(file);
-            }
+            var ignore = _files[f].ignore;
+			if (ignore != null && ignore == true) _files.remove(f);
         }
 	}
 }
