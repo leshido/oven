@@ -96,7 +96,7 @@ class Main
 		else
 		{
 			var content = "#!/bin/sh\n\nhaxelib run oven $@";
-			var path = "/usr/bin/oven";
+			var path = "/usr/local/bin/oven";
 			try
 			{
 				sys.io.File.saveContent(path , content );
